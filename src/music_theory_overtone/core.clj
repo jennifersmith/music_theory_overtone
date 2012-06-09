@@ -34,7 +34,7 @@
   (let [has-children? (comp coll? second)
         divide-bar (fn [[length notes]] (map vector (repeat (/ length (count notes))) notes ))
         notes-and-durations
-        (->> (tree-seq has-children? divide-bar [bar-length pitches])
+        (->> (tree-seq has-children? divide-bar [ (* ( count pitches) bar-length) pitches])
              (remove has-children?))]
     (map cons
          (reductions + 0 (map first notes-and-durations)) notes-and-durations)))
@@ -63,7 +63,7 @@
 
 (play-chord# [60 64 67] [70 74 77])
 
-(play-barred-melody# 150 3 [48] [55] [60 60 [72 72 72]]  )
+(play-barred-melody# 150 1 [48] [55] [60 60 [72 72 72]]  )
 
 ;; This tutorial aims to introduce a few of the basics of scales,
 ;; chords and basic harmony. Bias towards Western and mainly classical
@@ -277,3 +277,18 @@
 ;; the subdominant as it is one below the domiant (I am sure there is a joke in there somewhere)
 ;; You can use this combination of tonic, subdominant and dominant
 ;; chords to play a whole variety of tunes:
+
+;; From folk/traditional
+
+(play-barred-melody# 120 3
+                     
+                     (partition 3 (map note
+                                       [nil nil :G4 :E5 :D5 :C5 :D5 :C5 :A4 :G4 :E4 nil nil nil :G4 :E5 :D5 :C5 :C5 :B4 :C5 :D5 nil nil ] ))
+                     (concat [ [nil nil nil]]
+                             (map #(apply partial chord %) [[:C3 :major] [:F3 :major] [:C3 :major] [:C3 :major] [:C3 :major] [:F3 :major] [:G3 :major]] ))
+                     )
+
+;; to our friend Bach
+
+
+
