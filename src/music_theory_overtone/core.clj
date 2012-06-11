@@ -63,7 +63,7 @@
 
 (play-chord# [60 64 67] [70 74 77])
 
-(play-barred-melody# 150 1 [48] [55] [60 60 [72 72 72]]  )
+(play-barred-melody# 120 1 [48] [55] [60 60 [72 72 72]]  )
 
 ;; This tutorial aims to introduce a few of the basics of scales,
 ;; chords and basic harmony. Bias towards Western and mainly classical
@@ -103,8 +103,7 @@
 ;; We conventially loop over the octave at C, so :A1 :B1 :C2 :D2 etc.
 ;; On a keyboard instrument, C is normally the 'home key'
 
-;; Played together, the same note at different octaves sound good
-;; together
+;; Played together, the same note at different octaves sound extremely concordant
 
 (play-even-melody# 120 (map note [:C3 :C4 :C5]))
 
@@ -123,7 +122,9 @@
 (let [base-freq (midi->hz (note :D1))]
   (->> [:D1 :D2 :D3 :D4 :D5]
        (map (comp midi->hz note))
-       (map #(/ % base-freq)))) ;; ignore the errors...
+       (map #(/ % base-freq))))
+
+;; ignore the errors...
 
 ;; For more on pitch and frequency, Phil Potter's article is worth a
 ;; read: http://rhebus.posterous.com/pitch-and-frequency
@@ -136,7 +137,7 @@
 
 ;; Eval that a few times. Sounds random (cos it is) and not exactly
 ;; 'tuneful'. Possibly an infinite number of monkeys with an infinite
-;; number of slime sessions might end up with something that sounds
+;; number of swank servers might end up with something that sounds
 ;; good. But without these kind of resources, how do we end up with
 ;; melody?
 (play-even-melody# 220 [55 57 59 62 60 60 64 62 62 67 66 67 62 59 55 57 59 60 62 64 62 60 59 57 59 55 54 55 57 50 54 57 60 59 57 ] )
@@ -215,13 +216,27 @@
 
 ;; 6 semitones = 3 tones = tritone = evil!
 
+;; I like to think of chords and concordance and dissonance as giving
+;; music its colour and drama. Although rules were arguably more
+;; strict in earlier musical forms like baroque, more recently we tend
+;; to bend the rules and use disonnance as a major musical plot
+;; device. Frank Zappa:
+
+;;" The creation and destruction of harmonic and 'statistical' tensions
+;; is essential to the maintenance of compositional drama. Any
+;; composition (or improvisation) which remains consistent and
+;; 'regular' throughout is, for me, equivalent to watching a movie with
+;; only 'good guys' in it, or eating cottage cheese."
+;; —Frank Zappa, "The Real Frank Zappa Book" page 181, Frank Zappa and Peter Occhiogrosso, 1990
+
+
 ;; We can try and make harmony by picking three notes in a scale and
 ;; playing them together:
 
 (play-chord#  (choose-n 3 (scale :D4 :major)))
 
-;; If you eval that a few times, somtimes it sounds good, sometimes it
-;; doesn't. You can vary the key and scale too.
+;; If you eval that a few times, somtimes it sounds harmonious,
+;; sometimes it sounds pretty dissonant. You can vary the key and scale too.
 
 ;; There is of course another system in place - chords. Like a key
 ;; signature these consist of a root note - e.g C, D Bb and a
@@ -246,7 +261,7 @@
 (play-chord# (chord :D4 :dom7))
 
 ;; minor 6th - adding the sixth note of the minor scale
-(play-chord# (chord :E3 :m6))
+(play-chord# (chord :E4 :m6))
 
 ;; we can also invert chords : change the order that the notes appear.
 ;; These are effectively the same chord, but given a slightly
@@ -290,5 +305,17 @@
 
 ;; to our friend Bach
 
+(play-barred-melody# 120 4
+                     (degrees->pitches [ [ :iii :iii :iv :v] [ :v :iv :iii :ii] [ :i :i :ii :iii] [ :iii [:ii :ii] ]]  :major :C4)
+                     [#(chord :C3 :major) #(chord :G3 :major) #(chord :C3 :major) #(chord :G3 :major)])
 
+;; to some (comparatively) more modern stuff
+
+(play-barred-melody# 120 4
+                     (degrees->pitches [[nil nil nil :v-] [:iii [:iii :iii] :iii :iv] [:iii [nil :v-]] [:iii :iii :iii :iv] [:iii] [:iii [:iii :iii] :iii :iv] [ :v [ :v :iv] :iii] [:ii] [nil nil [ :v- :vi-] :vii-] [:i] [nil nil [:i :ii] :iii ] [:iv] [nil nil nil :iv] [:iii :iii :iii :i] [:ii [:ii :i] :vii- ] [:i]  ] :major :G4  ))
+
+(defn syncopate [bars]
+  (let [syncopate-bar (fn [notes] :foo ) ])
+  (map syncopate-bar bars)
+  )
 
