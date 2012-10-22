@@ -41,6 +41,7 @@
 
 
 
+
 (defn chord-event [start pitches]
   (for [pitch pitches] [start 1 pitch] ))
 ;; I am pretty sure this is a bad idea - just creating a metronome
@@ -50,13 +51,20 @@
 (defn play-even-melody# [tempo pitches]
   (play# (metronome tempo) (even-melody pitches)))
 
-(defn play-barred-melody# [tempo bar-length  & barred-pitches]
-  (let [barred-melodies (map #(barred-melody bar-length %) barred-pitches)
+(defn play-barred-melody-with-beat-fn# [tempo bar-length beat-fn & barred-pitches]
+  (let [
+        apply-beat-fn (fn [events] (map (fn [[offset dur note ]] [(beat-fn offset) dur note]) events ) )
+        barred-melodies
+        (->> barred-pitches
+             (map #(barred-melody bar-length %))
+             (map #(apply-beat-fn %)  ))
         metro (metronome tempo)]
     (doall
      (map
       #(play# metro %) barred-melodies ))))
 
+;; todo : remove apply - should just pass in an array of barred-pitches
+(defn play-barred-melody# [tempo bar-length beat-fn & barred-pitches] (apply play-barred-melody-with-beat-fn# tempo bar-length identity barred-pitches)  )
 ;; just check that it is working with a couple of notes
 
 (play-even-melody# 160 [60 61 62 63])
@@ -311,11 +319,15 @@
 
 ;; to some (comparatively) more modern stuff
 
-(play-barred-melody# 120 4
-                     (degrees->pitches [[nil nil nil :v-] [:iii [:iii :iii] :iii :iv] [:iii [nil :v-]] [:iii :iii :iii :iv] [:iii] [:iii [:iii :iii] :iii :iv] [ :v [ :v :iv] :iii] [:ii] [nil nil [ :v- :vi-] :vii-] [:i] [nil nil [:i :ii] :iii ] [:iv] [nil nil nil :iv] [:iii :iii :iii :i] [:ii [:ii :i] :vii- ] [:i]  ] :major :G4  ))
+(play-barred-melody-with-beat-fn# 120 4 syncopate-basic
+  (degrees->pitches [[nil nil nil :v-] [:iii [:iii :iii] :iii :iv] [:iii [nil :v-]] [:iii :iii :iii :iv] [:iii] [:iii [:iii :iii] :iii :iv] [ :v [ :v :iv] :iii] [:ii] [nil nil [ :v- :vi-] :vii-] [:i] [nil nil [:i :ii] :iii ] [:iv] [nil nil nil :iv] [:iii :iii :iii :i] [:ii [:ii :i] :vii- ] [:i]  ] :major :G4  ))
 
-(defn syncopate [bars]
-  (let [syncopate-bar (fn [notes] :foo ) ])
-  (map syncopate-bar bars)
+(defn syncopate-basic [time]
+  (let [part-of-bar (mod time 4)]
+    (case part-of-bar
+      1 (- time 0.5)
+      time))
   )
 
+
+(map syncopate-basic [0 1 2 3 4])
